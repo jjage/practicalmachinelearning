@@ -1,0 +1,70 @@
+---
+title: "Practical Machine Learning Course Project"
+author: "Jeff Jager"
+date: "11/17/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Human Activity Recognition (HAR) Research Project
+
+by: Jeff Jager
+for: Practical Machine Learning
+
+This Project predicts the performance of six subjects performing barbell curls. The performance is tracked with the 'classe' variable in the training dataset. The training dataset includes 159 variables including the outcome variable.
+Fifty-four variables were chosen to build the model. Variables with a large number of missing values were discarded. 
+
+
+```{r WLE dataset}
+
+wle <- read.csv('pml-training.csv')
+
+wle_vars <- c( "num_window", "roll_belt", "pitch_belt","yaw_belt", "total_accel_belt", "gyros_belt_x", "gyros_belt_y", "gyros_belt_z", "accel_belt_x", "accel_belt_y", "accel_belt_z", "magnet_belt_x", "magnet_belt_y", "magnet_belt_z", "roll_arm", "pitch_arm", "yaw_arm", "total_accel_arm", "gyros_arm_x", "gyros_arm_y", "gyros_arm_z", "accel_arm_x", "accel_arm_y", "accel_arm_z", "magnet_arm_x", "magnet_arm_y", "magnet_arm_z", "roll_dumbbell", "pitch_dumbbell", "yaw_dumbbell", "total_accel_dumbbell", "gyros_dumbbell_x", "gyros_dumbbell_y", 	"gyros_dumbbell_z", "accel_dumbbell_x", "accel_dumbbell_y", "accel_dumbbell_z", "magnet_dumbbell_x", "magnet_dumbbell_y", "magnet_dumbbell_z", "roll_forearm", "pitch_forearm", "yaw_forearm", "total_accel_forearm", "gyros_forearm_x", "gyros_forearm_y", "gyros_forearm_z", "accel_forearm_x", "accel_forearm_y", "accel_forearm_z", "magnet_forearm_x", "magnet_forearm_y", "magnet_forearm_z", "classe"
+)
+
+wle_subset <- wle[wle_vars]
+
+head(wle_subset)
+
+```
+
+The training data was partitioned into a training and test data set, which should not be confused with the test data without the outcome variable that is used for the quiz submission. Seventy percent of the data was used to train the model and the remaining thirty percent was used to test.
+
+```{r random forest }
+
+library(caret)
+library(ggplot2)
+
+inTrain <- createDataPartition(y=wle_subset$classe, p=0.70, list=FALSE)
+
+training <- wle_subset[inTrain,]
+testing <- wle_subset[-inTrain,]
+
+modFit <- train(classe ~ ., method="rf", data=training, prox=FALSE, ntree=10)
+
+modFit$finalModel
+
+
+testPredict<- predict(modFit, testing)
+
+table(testPredict, testing$classe)
+# 5885 test records, 5866 correct!, 99.7%
+
+```
+
+
+```{r submission}
+
+wle_test <- read.csv('pml-testing.csv')
+
+wle_test_subset <- wle_test[wle_vars[-54]]
+
+subPred <- predict(modFit, wle_test_subset)
+
+print('Predicted values:')
+head(subPred, 20)
+
+```
