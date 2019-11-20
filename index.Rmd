@@ -32,7 +32,6 @@ head(wle_subset)
 ```
 
 The training data was partitioned into a training and test data set, which should not be confused with the test data without the outcome variable that is used for the quiz submission. Seventy percent of the data was used to train the model and the remaining thirty percent was used to test.
-
 ```{r random forest }
 
 library(caret)

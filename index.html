@@ -499,24 +499,24 @@ modFit$finalModel</code></pre>
 ##                      Number of trees: 10
 ## No. of variables tried at each split: 27
 ## 
-##         OOB estimate of  error rate: 2.23%
+##         OOB estimate of  error rate: 1.66%
 ## Confusion matrix:
 ##      A    B    C    D    E class.error
-## A 3831   12    7    4    2 0.006483402
-## B   39 2540   26   14   10 0.033853176
-## C    6   49 2298   14    6 0.031605563
-## D    6   16   35 2159    7 0.028789924
-## E    6   15   11   18 2448 0.020016013</code></pre>
+## A 3853    6    5    4    1 0.004135436
+## B   35 2545   25   10    9 0.030106707
+## C    3   29 2334    6    4 0.017676768
+## D    3    9   26 2179    4 0.018910401
+## E    4   13    6   23 2451 0.018422107</code></pre>
 <pre class="r"><code>testPredict&lt;- predict(modFit, testing)
 
 table(testPredict, testing$classe)</code></pre>
 <pre><code>##            
 ## testPredict    A    B    C    D    E
-##           A 1671    5    0    0    0
-##           B    2 1131    3    0    1
-##           C    0    3 1023    3    1
-##           D    0    0    0  960    3
-##           E    1    0    0    1 1077</code></pre>
+##           A 1674    0    0    0    0
+##           B    0 1136    4    0    0
+##           C    0    2 1021    8    0
+##           D    0    1    0  956    6
+##           E    0    0    1    0 1076</code></pre>
 <pre class="r"><code># 5885 test records, 5866 correct!, 99.7%</code></pre>
 <pre class="r"><code>wle_test &lt;- read.csv(&#39;pml-testing.csv&#39;)
 
