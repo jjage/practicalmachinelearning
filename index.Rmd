@@ -46,12 +46,10 @@ modFit <- train(classe ~ ., method="rf", data=training, prox=FALSE, ntree=10)
 
 modFit$finalModel
 
-
 testPredict<- predict(modFit, testing)
 
 confusionMatrix(testPredict, testing$classe)
 
-plot(testPredict, testing$classe)
 ```
 
 
