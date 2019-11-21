@@ -385,6 +385,7 @@ $(document).ready(function () {
 <div id="human-activity-recognition-har-research-project" class="section level2">
 <h2>Human Activity Recognition (HAR) Research Project</h2>
 <p>This Project predicts the performance of six subjects performing barbell curls. The performance is tracked with the ‘classe’ variable in the training dataset. The training dataset includes 159 variables including the outcome variable. Fifty-four variables were chosen to build the model. Variables with a large number of missing values were discarded.</p>
+<p>The data was loaded and subsetted as follows:</p>
 <pre class="r"><code>wle &lt;- read.csv(&#39;pml-training.csv&#39;)
 
 wle_vars &lt;- c( &quot;num_window&quot;, &quot;roll_belt&quot;, &quot;pitch_belt&quot;,&quot;yaw_belt&quot;, &quot;total_accel_belt&quot;, &quot;gyros_belt_x&quot;, &quot;gyros_belt_y&quot;, &quot;gyros_belt_z&quot;, &quot;accel_belt_x&quot;, &quot;accel_belt_y&quot;, &quot;accel_belt_z&quot;, &quot;magnet_belt_x&quot;, &quot;magnet_belt_y&quot;, &quot;magnet_belt_z&quot;, &quot;roll_arm&quot;, &quot;pitch_arm&quot;, &quot;yaw_arm&quot;, &quot;total_accel_arm&quot;, &quot;gyros_arm_x&quot;, &quot;gyros_arm_y&quot;, &quot;gyros_arm_z&quot;, &quot;accel_arm_x&quot;, &quot;accel_arm_y&quot;, &quot;accel_arm_z&quot;, &quot;magnet_arm_x&quot;, &quot;magnet_arm_y&quot;, &quot;magnet_arm_z&quot;, &quot;roll_dumbbell&quot;, &quot;pitch_dumbbell&quot;, &quot;yaw_dumbbell&quot;, &quot;total_accel_dumbbell&quot;, &quot;gyros_dumbbell_x&quot;, &quot;gyros_dumbbell_y&quot;,   &quot;gyros_dumbbell_z&quot;, &quot;accel_dumbbell_x&quot;, &quot;accel_dumbbell_y&quot;, &quot;accel_dumbbell_z&quot;, &quot;magnet_dumbbell_x&quot;, &quot;magnet_dumbbell_y&quot;, &quot;magnet_dumbbell_z&quot;, &quot;roll_forearm&quot;, &quot;pitch_forearm&quot;, &quot;yaw_forearm&quot;, &quot;total_accel_forearm&quot;, &quot;gyros_forearm_x&quot;, &quot;gyros_forearm_y&quot;, &quot;gyros_forearm_z&quot;, &quot;accel_forearm_x&quot;, &quot;accel_forearm_y&quot;, &quot;accel_forearm_z&quot;, &quot;magnet_forearm_x&quot;, &quot;magnet_forearm_y&quot;, &quot;magnet_forearm_z&quot;, &quot;classe&quot;
@@ -477,8 +478,11 @@ head(wle_subset)</code></pre>
 ## 4              658              469      A
 ## 5              655              473      A
 ## 6              660              478      A</code></pre>
-<p>The training data was partitioned into a training and test data set, which should not be confused with the test data without the outcome variable that is used for the quiz submission. Seventy percent of the data was used to train the model and the remaining thirty percent was used to test. The following models were created: 1. Regression Tree with rpart, 2. Regression Tree with boosting using gbm and 3. Random Forest with 10 trees</p>
-<p>The single regression tree predicted 48% of the outcomes correctly and the gbm model predicted 98% correct outcomes. the Random Forest model proved to be the most accurate with 99% of the outcomes correctly predicted.</p>
+<p>The training data was partitioned into a training and test data set, which should not be confused with the test data without the outcome variable that is used for the quiz submission. Seventy percent of the data was used to train the model and the remaining thirty percent was used to test. The following models were created:<br />
+1. Regression Tree with rpart,<br />
+2. Regression Tree with boosting using gbm and<br />
+3. Random Forest with 10 trees</p>
+<p>The single regression tree predicted 48% of the outcomes correctly and the gbm boosted model predicted 98% correct outcomes. the Random Forest model proved to be the most accurate with 99% of the outcomes correctly predicted.</p>
 <pre class="r"><code>library(caret)</code></pre>
 <pre><code>## Loading required package: lattice</code></pre>
 <pre><code>## Loading required package: ggplot2</code></pre>
@@ -499,58 +503,50 @@ modFit$finalModel</code></pre>
 ##                      Number of trees: 10
 ## No. of variables tried at each split: 27
 ## 
-##         OOB estimate of  error rate: 2.08%
+##         OOB estimate of  error rate: 2.21%
 ## Confusion matrix:
 ##      A    B    C    D    E class.error
-## A 3842    9    3    6    2 0.005178664
-## B   32 2535   38   11    9 0.034285714
-## C    2   39 2306   14    2 0.024121879
-## D   10    8   36 2164   13 0.030031376
-## E    5   21   10   13 2451 0.019600000</code></pre>
-<pre class="r"><code>testPredict&lt;- predict(modFit, testing)
-
-confusionMatrix(testPredict, testing$classe)</code></pre>
+## A 3841   20    1    5    4 0.007749935
+## B   39 2539   26   17    5 0.033130236
+## C    7   45 2307   13    4 0.029040404
+## D   14   24   18 2169    5 0.027354260
+## E    4   16   12   22 2444 0.021617294</code></pre>
+<pre class="r"><code>testPredict&lt;- predict(modFit, testing)</code></pre>
+<p>The confusion matrix for the random forest model shows the following:</p>
+<pre class="r"><code>confusionMatrix(testPredict, testing$classe)</code></pre>
 <pre><code>## Confusion Matrix and Statistics
 ## 
 ##           Reference
 ## Prediction    A    B    C    D    E
-##          A 1670    6    0    0    0
-##          B    2 1128    7    1    0
-##          C    0    4 1019    3    0
-##          D    2    1    0  959    2
-##          E    0    0    0    1 1080
+##          A 1673    9    0    0    0
+##          B    0 1128    2    3    1
+##          C    0    2 1023    4    0
+##          D    1    0    1  957    4
+##          E    0    0    0    0 1077
 ## 
 ## Overall Statistics
-##                                           
-##                Accuracy : 0.9951          
-##                  95% CI : (0.9929, 0.9967)
-##     No Information Rate : 0.2845          
-##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
-##                                           
-##                   Kappa : 0.9938          
-##                                           
-##  Mcnemar&#39;s Test P-Value : NA              
+##                                          
+##                Accuracy : 0.9954         
+##                  95% CI : (0.9933, 0.997)
+##     No Information Rate : 0.2845         
+##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16      
+##                                          
+##                   Kappa : 0.9942         
+##                                          
+##  Mcnemar&#39;s Test P-Value : NA             
 ## 
 ## Statistics by Class:
 ## 
 ##                      Class: A Class: B Class: C Class: D Class: E
-## Sensitivity            0.9976   0.9903   0.9932   0.9948   0.9982
-## Specificity            0.9986   0.9979   0.9986   0.9990   0.9998
-## Pos Pred Value         0.9964   0.9912   0.9932   0.9948   0.9991
-## Neg Pred Value         0.9990   0.9977   0.9986   0.9990   0.9996
+## Sensitivity            0.9994   0.9903   0.9971   0.9927   0.9954
+## Specificity            0.9979   0.9987   0.9988   0.9988   1.0000
+## Pos Pred Value         0.9946   0.9947   0.9942   0.9938   1.0000
+## Neg Pred Value         0.9998   0.9977   0.9994   0.9986   0.9990
 ## Prevalence             0.2845   0.1935   0.1743   0.1638   0.1839
-## Detection Rate         0.2838   0.1917   0.1732   0.1630   0.1835
-## Detection Prevalence   0.2848   0.1934   0.1743   0.1638   0.1837
-## Balanced Accuracy      0.9981   0.9941   0.9959   0.9969   0.9990</code></pre>
-<pre class="r"><code>wle_test &lt;- read.csv(&#39;pml-testing.csv&#39;)
-
-wle_test_subset &lt;- wle_test[wle_vars[-54]]
-
-subPred &lt;- predict(modFit, wle_test_subset)
-
-head(subPred, 1)</code></pre>
-<pre><code>## [1] B
-## Levels: A B C D E</code></pre>
+## Detection Rate         0.2843   0.1917   0.1738   0.1626   0.1830
+## Detection Prevalence   0.2858   0.1927   0.1749   0.1636   0.1830
+## Balanced Accuracy      0.9986   0.9945   0.9979   0.9958   0.9977</code></pre>
+<p>As can be seen in the results from the confusion matrix, the random forest model produced very good results based on the predicted values of the test data set. Another point worth noting is that Microsoft’s Open R was used to decrease processing time when building the models.</p>
 </div>
 
 

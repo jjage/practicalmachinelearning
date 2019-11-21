@@ -12,7 +12,9 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Human Activity Recognition (HAR) Research Project
 
 This Project predicts the performance of six subjects performing barbell curls. The performance is tracked with the 'classe' variable in the training dataset. The training dataset includes 159 variables including the outcome variable.
-Fifty-four variables were chosen to build the model. Variables with a large number of missing values were discarded. 
+Fifty-four variables were chosen to build the model. Variables with a large number of missing values were discarded.  
+
+The data was loaded and subsetted as follows:
 ```{r WLE dataset}
 
 wle <- read.csv('pml-training.csv')
@@ -26,14 +28,13 @@ head(wle_subset)
 
 ```
 
-The training data was partitioned into a training and test data set, which should not be confused with the test data without the outcome variable that is used for the quiz submission. Seventy percent of the data was used to train the model and the remaining thirty percent was used to test. The following models were created: 
-  1. Regression Tree with rpart,
-  2. Regression Tree with boosting using gbm and
-  3. Random Forest with 10 trees
+The training data was partitioned into a training and test data set, which should not be confused with the test data without the outcome variable that is used for the quiz submission. Seventy percent of the data was used to train the model and the remaining thirty percent was used to test. The following models were created:  
+    1. Regression Tree with rpart,   
+    2. Regression Tree with boosting using gbm and   
+    3. Random Forest with 10 trees   
   
-The single regression tree predicted 48% of the outcomes correctly and the gbm model predicted 98% correct outcomes.  the Random Forest model proved to be the most accurate with 99% of the outcomes correctly predicted.
-```{r random forest }
-
+The single regression tree predicted 48% of the outcomes correctly and the gbm boosted model predicted 98% correct outcomes.  the Random Forest model proved to be the most accurate with 99% of the outcomes correctly predicted.
+```{r random forest model}
 library(caret)
 library(ggplot2)
 
@@ -47,13 +48,26 @@ modFit <- train(classe ~ ., method="rf", data=training, prox=FALSE, ntree=10)
 modFit$finalModel
 
 testPredict<- predict(modFit, testing)
+```
 
+The confusion matrix for the random forest model shows the following:
+```{r confusion matrix}
 confusionMatrix(testPredict, testing$classe)
+
+```
+As can be seen in the results from the confusion matrix, the random forest model produced very good results based on the predicted values of the test data set. Another point worth noting is that Microsoft's Open R was used to decrease processing time when building the models. 
+
+
+```{r include=FALSE}
+library(randomForestExplainer)
+
+# min_depth_frame <- min_depth_distribution(modFit)
+
 
 ```
 
 
-```{r submission}
+```{r submission, include=FALSE}
 
 wle_test <- read.csv('pml-testing.csv')
 
