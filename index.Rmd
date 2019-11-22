@@ -33,7 +33,7 @@ The training data was partitioned into a training and test data set, which shoul
     2. Regression Tree with boosting using gbm and   
     3. Random Forest with 10 trees   
   
-The single regression tree predicted 48% of the outcomes correctly and the gbm boosted model predicted 98% correct outcomes.  the Random Forest model proved to be the most accurate with 99% of the outcomes correctly predicted.
+The single regression tree predicted 48% of the outcomes correctly and the gbm boosted model predicted 98% correct outcomes.  the Random Forest model proved to be the most accurate with 99% of the outcomes correctly predicted.  Given that the random forest model achieved a very high degree of accuracy, I did not feel it necessary to build additional models that used cross-validation.
 ```{r random forest model}
 library(caret)
 library(ggplot2)
@@ -43,7 +43,7 @@ inTrain <- createDataPartition(y=wle_subset$classe, p=0.70, list=FALSE)
 training <- wle_subset[inTrain,]
 testing <- wle_subset[-inTrain,]
 
-modFit <- train(classe ~ ., method="rf", data=training, prox=FALSE, ntree=10)
+modFit <- train(classe ~ ., method="rf", data=training, prox=FALSE, ntree=10, allowParallel=TRUE, localImp = TRUE)
 
 modFit$finalModel
 
@@ -58,13 +58,40 @@ confusionMatrix(testPredict, testing$classe)
 As can be seen in the results from the confusion matrix, the random forest model produced very good results based on the predicted values of the test data set. Another point worth noting is that Microsoft's Open R was used to decrease processing time when building the models. 
 
 
-```{r include=FALSE}
+
+```{r}
 library(randomForestExplainer)
 
-# min_depth_frame <- min_depth_distribution(modFit)
+min_depth_frame <- min_depth_distribution(modFit$finalModel)
+```
 
+The following table shows the distribution of minimal depth and the mean depth for the ten most important variables. These are the variables that resulted in the greatest improvement to the model. Looking at the first row for the variable 'roll_belt', we can see (using the color chart) that it was not used in approximately 5 trees, appeared at depth one in three trees, depth two in two trees, and depth four in one tree for an average depth of 1.1. The occurances are approximated by reading the chart.
+```{r}
+plot_min_depth_distribution(min_depth_frame)
+```
+
+The importance of each variable was determined using the measure_importance function from the randomForestExplainer package. The ten most important variables based on the increase in accuracy are as follows:
+```{r, results="hide"}
+measure_importance(modFit$finalModel)
+mea_imp <- measure_importance(modFit$finalModel, measures = c("mean_min_depth", "no_of_trees", "times_a_root", "accuracy_decrease"))
+mea <- mea_imp[order(-mea_imp$accuracy_decrease),]
+```
+
+```{r}
+head(mea, 10)
+```
+
+Using the same measure of importance, the ten least important variables are:
+```{r, results="hide"}
+mea_least <- mea_imp[order(mea_imp$accuracy_decrease),]
+```
+
+```{r}
+head(mea_least, 10)
 
 ```
+
+
 
 
 ```{r submission, include=FALSE}
