@@ -1,5 +1,5 @@
 ---
-title: "Practical Machine Learning Course Project "
+title: "Practical Machine Learning - Johns Hopkins Statistics and Machine Learning Specialization "
 author: "Jeff Jager"
 date: "11/17/2019"
 output: html_document
@@ -15,7 +15,7 @@ This Project predicts the performance of six subjects performing barbell curls. 
 Fifty-four variables were chosen to build the model. Variables with a large number of missing values were discarded.  
 
 The data was loaded and subsetted as follows:
-```{r WLE dataset}
+```{r WLE dataset,  warning=FALSE}
 
 wle <- read.csv('pml-training.csv')
 
@@ -33,11 +33,12 @@ The training data was partitioned into a training and test data set, which shoul
     2. Regression Tree with boosting using gbm and   
     3. Random Forest with 10 trees   
   
-The single regression tree predicted 48% of the outcomes correctly and the gbm boosted model predicted 98% correct outcomes.  the Random Forest model proved to be the most accurate with 99% of the outcomes correctly predicted.  Given that the random forest model achieved a very high degree of accuracy, I did not feel it necessary to build additional models that used cross-validation.
-```{r random forest model}
+The single regression tree predicted 48% of the outcomes correctly and the gbm boosted model predicted 98% correct outcomes.  The Random Forest model proved to be the most accurate with 99% of the outcomes correctly predicted.  Given that the random forest model achieved a very high degree of accuracy, I did not feel it necessary to build additional models that used cross-validation.
+```{r random forest model,  warning=FALSE}
 library(caret)
 library(ggplot2)
 
+set.seed(101)
 inTrain <- createDataPartition(y=wle_subset$classe, p=0.70, list=FALSE)
 
 training <- wle_subset[inTrain,]
@@ -51,7 +52,7 @@ testPredict<- predict(modFit, testing)
 ```
 
 The confusion matrix for the random forest model shows the following:
-```{r confusion matrix}
+```{r confusion matrix, warning=FALSE}
 confusionMatrix(testPredict, testing$classe)
 
 ```
@@ -59,14 +60,14 @@ As can be seen in the results from the confusion matrix, the random forest model
 
 
 
-```{r}
+```{r, warning=FALSE}
 library(randomForestExplainer)
 
 min_depth_frame <- min_depth_distribution(modFit$finalModel)
 ```
 
-The following table shows the distribution of minimal depth and the mean depth for the ten most important variables. These are the variables that resulted in the greatest improvement to the model. Looking at the first row for the variable 'roll_belt', we can see (using the color chart) that it was not used in approximately 5 trees, appeared at depth one in three trees, depth two in two trees, and depth four in one tree for an average depth of 1.1. The occurances are approximated by reading the chart.
-```{r}
+The following table shows the distribution of minimal depth and the mean depth for the ten most important variables. These are the variables that resulted in the greatest improvement to the model. Looking at the first row for the variable 'roll_belt', we can see (using the color chart) that it was not used in approximately three trees, appeared at depth one in three trees, depth two in two trees, and depths three and four in one tree for an average depth of 1.4. The occurances are approximated by reading the chart.
+```{r, warning=FALSE}
 plot_min_depth_distribution(min_depth_frame)
 ```
 
@@ -77,16 +78,16 @@ mea_imp <- measure_importance(modFit$finalModel, measures = c("mean_min_depth", 
 mea <- mea_imp[order(-mea_imp$accuracy_decrease),]
 ```
 
-```{r}
+```{r, warning=FALSE}
 head(mea, 10)
 ```
 
 Using the same measure of importance, the ten least important variables are:
-```{r, results="hide"}
+```{r, results="hide", warning=FALSE}
 mea_least <- mea_imp[order(mea_imp$accuracy_decrease),]
 ```
 
-```{r}
+```{r, warning=FALSE}
 head(mea_least, 10)
 
 ```
