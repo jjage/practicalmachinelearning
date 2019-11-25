@@ -33,7 +33,7 @@ The training data was partitioned into a training and test data set, which shoul
     2. Regression Tree with boosting using gbm and   
     3. Random Forest with 10 trees   
   
-The single regression tree predicted 48% of the outcomes correctly and the gbm boosted model predicted 98% correct outcomes.  The Random Forest model proved to be the most accurate with 99% of the outcomes correctly predicted.  Given that the random forest model achieved a very high degree of accuracy, I did not feel it necessary to build additional models that used cross-validation.
+The single regression tree predicted 48% of the outcomes correctly and the gbm boosted model predicted 98% correct outcomes.  The Random Forest model proved to be the most accurate with 99% of the outcomes correctly predicted.  Given that the random forest model achieved a very high degree of accuracy, I did not feel it necessary to build additional models that explicitly used cross-validation and instead relied upon the implicit cross-validation in the random forest model.
 ```{r random forest model,  warning=FALSE}
 library(caret)
 library(ggplot2)
